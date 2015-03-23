@@ -29,6 +29,7 @@ Again, this has not yet been tested thoroughly tested. Will do it before the nex
 ## Usage
 
 Initialize it on any DOM element:
+
 	var editable = document.getElementById('editable'),
 		undo = new UndoManager(editable);
 	
