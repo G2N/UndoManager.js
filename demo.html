@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>UndoManager.js | A Simple javascript undo manager with a lazy name</title>
+</head>
+<body>
+	<div id="editable" contenteditable>
+		<p>Hello World !</p>
+	</div>
+	
+	<script src="src/UndoManager.js"></script>
+	<script>
+		var editable = document.getElementById('editable'),
+			undo = new UndoManager(editable);
+	</script>
+</body>
+</html>
