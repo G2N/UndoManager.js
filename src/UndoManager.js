@@ -87,10 +87,16 @@ function UndoManager(element) {
 	function _pushState(mutations) {
 		// If there is only one mutation with a type of 'characterData', the user is simply inserting one caracter (not a space)
 		// So do nothing
-		if(mutations && mutations.length === 1 && mutations[0].type == 'characterData') {
+		if(mutations && mutations.length === 1 && mutations[0].type === 'characterData') {
 			return;
 		}
 		
+		// Do not listen to changes on contenteditable
+		for(var i in mutations) {
+			if(mutations[i].type === 'attributes' && mutations[i].attributeName === 'contenteditable') {
+				return;
+			}
+		}
 		// If we did some undoing, we need to destroy the redo history
 		if(self.index < self.history.length - 2) {
 			self.history = self.history.splice(self.index);
