@@ -35,7 +35,8 @@ function UndoManager(element) {
 	this.observer.observe(this.element, OBSERVER_CFG);
 	
 	// Watch for Keyboard input
-	this.element.addEventListener('keyup', function(event) {
+	this.element.addEventListener('keydown', function(event) {
+		
 		if(event.altKey || !event.ctrlKey) {
 			return;
 		}
@@ -51,6 +52,8 @@ function UndoManager(element) {
 			event.preventDefault();
 			_redo();
 		}
+		
+		
 	});
 	
 	/**
