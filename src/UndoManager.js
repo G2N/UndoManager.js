@@ -80,6 +80,9 @@ function UndoManager(element) {
 	/**
 	 * Pushes a state at the end of the history
 	 * 
+	 * [TODO] I need to save the cursors' position inside the DOM so that it doesn't move erratically...
+	 * I guess this means storing the element itself, not the innerHTML and creating some childnode here.
+	 * 
 	 * [FIXME] I'm not entirely happy with the mechanic involved in preventing storage of single character modifications
 	 * Maybe this part could rely on document.execCommand('undo') ?
 	 * 
@@ -99,68 +102,19 @@ function UndoManager(element) {
 		if(self.history.length > MAX_ENTRIES) {
 			self.history.shift();
 		}
-		
-		var doc = self.element.ownerDocument,
-			sel = doc.getSelection(),
-			range,
-			cursorEl,
-			state;
-		
-		// Stop observing before modifyng the DOM
-		self.observer.disconnect();
-		
-		// If we'got a selection, wrap it in a span so that we can restore it
-		if(sel.type !== 'None') {
-			// Create a wrapper
-			cursorEl = document.createElement('span');
-			cursorEl.className = '_um_undo';
-			
-			// Get the range and surround it
-			range = sel.getRangeAt(0);
-			range.surroundContents(cursorEl);
-		}
-		
-		// Set the state's HTML
-		state = self.element.innerHTML;
-		
-		// If we created a wrapper for the selection, we need to unwrap it
-		if(cursorEl) {
-			cursorEl.outerHTML = cursorEl.innerHTML;
-		}
-		
-		// Start obsreving again
-		self.observer.observe(self.element, OBSERVER_CFG);
+		var state = self.element.innerHTML;
 		self.history.push(state);
 		// Automatically put the index at the end
 		self.index = self.history.length - 1;
 	}
 	
 	/**
-	 * Update the element's innerHTML with the current history index
+	 * Update the element's innerHTML with th current history index
+	 * [TODO] When I'll have the cursor position saved, I'll need to restore it :D
 	 */
 	function _updateElement() {
-		// Stop observing before editing the DOM
 		self.observer.disconnect();
-		var doc = self.element.ownerDocument,
-			sel = doc.getSelection(),
-			range = doc.createRange(),
-			cursorEl;
-		
 		self.element.innerHTML = self.history[self.index];
-		
-		// Check if we got a wrapper for the selection
-		cursorEl = self.element.getElementsByClassName('_um_undo')[0];
-		if(cursorEl) {
-			// Destroy the current selection
-			sel.removeAllRanges();
-			// Select the wrapper
-			range.selectNodeContents(cursorEl);
-			sel.addRange(range);
-			// Now we need to remove it
-			cursorEl.outerHTML = cursorEl.innerHTML;
-		}
-		
-		// Start observing again
 		self.observer.observe(self.element, OBSERVER_CFG);
 	}
 	
