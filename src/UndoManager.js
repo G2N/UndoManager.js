@@ -4,6 +4,7 @@
 /**
  * A simple javascript undo manager
  * 
+ * [TODO] This definitely needs a max length or it could pile up quiclkly
  * [TODO] Take care of the context (right click) menu's undo entry <(°_°)>
  * 
  * @param   {Object} element A DOM Element to watch for
@@ -14,7 +15,6 @@ function UndoManager(element) {
 	
 	var Z_KEY = 90,
 		Y_KEY = 89,
-		MAX_ENTRIES = 100,
 		// Config object for the MutationObserver
 		OBSERVER_CFG = { 
 			attributes: true, 
@@ -57,24 +57,20 @@ function UndoManager(element) {
 	 * Goes backwards...
 	 */
 	function _undo() {
-		self.observer.disconnect();
 		if(self.index > 0) {
 			self.index --;
 			_updateElement();
 		}
-  		self.observer.observe(self.element, OBSERVER_CFG);
 	}
 	
 	/**
 	 * Goes forward
 	 */
 	function _redo() {
-		self.observer.disconnect();
 		if(self.index < self.history.length - 1) {
 			self.index ++;
 			_updateElement();
 		}
-		self.observer.observe(self.element, OBSERVER_CFG);
 	}
 	
 	/**
@@ -99,12 +95,8 @@ function UndoManager(element) {
 		if(self.index < self.history.length - 2) {
 			self.history = self.history.splice(self.index);
 		}
-		if(self.history.length > MAX_ENTRIES) {
-			self.history.shift();
-		}
 		var state = self.element.innerHTML;
 		self.history.push(state);
-		// Automatically put the index at the end
 		self.index = self.history.length - 1;
 	}
 	
